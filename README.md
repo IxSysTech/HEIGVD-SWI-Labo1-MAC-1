@@ -88,28 +88,61 @@ Le corps de la trame (Frame body) contient, entre autres, un champ de deux octet
 | 39 | Requested from peer QSTA due to timeout                                                                                                                                              |
 | 40 | Peer QSTA does not support the requested cipher suite                                                                                                                                              |
 | 46-65535 | Reserved                                                                                                                                              |
- 
+
 a) Utiliser la fonction de déauthentification de la suite aircrack, capturer les échanges et identifier le Reason code et son interpretation.
 
 __Question__ : quel code est utilisé par aircrack pour déauthentifier un client 802.11. Quelle est son interpretation ?
 
-__Question__ : A l'aide d'un filtre d'affichage, essayer de trouver d'autres trames de déauthentification dans votre capture. Avez-vous en trouvé d'autres ? Si oui, quel code contient-elle et quelle est son interpretation ?
+- 8 - Disassociated because sending station is leaving (or has left) BSS
+  - Le système d'exploitation a déplacé le client vers un autre point d'accès
+
+__Question__ : A l'aide d'un filtre d'affichage, essayer de trouver d'autres trames de déauthentification dans votre capture. Avez-vous en trouvé d'autres ? Si oui, quel code contient-elle et quelle est son interpretation?
+
+- Nous avons trouvé une trame avec comme reason code  1. Ce qui signifie qu'une disassociation a eu lieu de façon inconnue.
+![p1-q2](./images/p1-q2.png)
 
 b) Développer un script en Python/Scapy capable de générer et envoyer des trames de déauthentification. Le script donne le choix entre des Reason codes différents (liste ci-après) et doit pouvoir déduire si le message doit être envoyé à la STA ou à l'AP :
+
 * 1 - Unspecified
 * 4 - Disassociated due to inactivity
 * 5 - Disassociated because AP is unable to handle all currently associated stations
 * 8 - Deauthenticated because sending STA is leaving BSS
 
+Fonctionnement du script :
+
+- Le script demande à l'utilisateur de choisir entre des Reason codes différents (1, 4, 5, 8)
+- Ensuite, il faudra fournir le nom de l'interface avec laquelle nous allons faire l'attaque ainsi que l'adresse MAC de :
+  - L'AP que l'on veut attaquer
+  - La victime qui se fera déconnecter
+
+![script1-2](./images/script1-2.jpg)
+
+![script1-2](./images/script1-3.jpg)
+
 __Question__ : quels codes/raisons justifient l'envoie de la trame à la STA cible et pourquoi ?
+
+- Les codes sont le 1, 4 et 5. 
+  - 1 --> Aucune raison particulière, peut donc être envoyé à la STA ou à l'AP
+  - 4 --> Indique que le STA est déconnecté car elle est rester incative
+  - 5 --> Indique que l'AP ne sert plus de STA
 
 __Question__ : quels codes/raisons justifient l'envoie de la trame à l'AP et pourquoi ?
 
+- Les codes 1 et 8 :
+  - 1 --> Aucune raison particulière, peut donc être envoyé à la STA ou à l'AP
+  - 8 --> Indiquer dans le message 
+
 __Question__ : Comment essayer de déauthentifier toutes les STA ?
+
+- Envoyer un broadcast avec comme adresse MAC pour le STA FF:FF:FF:FF:FF:FF
 
 __Question__ : Quelle est la différence entre le code 3 et le code 8 de la liste ?
 
+- Le code 8 fait en sorte que le client quitte le réseau de l'AP alors que le 3 déauthentifie le client de l'AP
+
 __Question__ : Expliquer l'effet de cette attaque sur la cible
+
+- Déconnecte le client de l'acces point
 
 ### 2. Fake channel evil tween attack
 a)	Développer un script en Python/Scapy avec les fonctionnalités suivantes :
@@ -121,10 +154,34 @@ a)	Développer un script en Python/Scapy avec les fonctionnalités suivantes :
 
 __Question__ : Expliquer l'effet de cette attaque sur la cible
 
+- Les appareils ne font aucune distinction entre 2 wifi qui possèdent le même nom. Cela permet d'augmenter les chances d'usurper l'identié d'un AP auprès de la victime
+
+Fonctionnement du script :
+
+- L'utilisateur devra fournir le nom de l'interface avec laquelle il veut exécuter l'attaque
+
+![p1-q2](./images/script2-1.jpg)
+
+- Le script va scanner tous les wifis. Une fois le scans terminé, il affichera le résultat dans la console. L'utilisateur devra ensuite sélectionner le wifi qu'il aimerai copier. 
+
+![p1-q2](./images/script2-2.jpg)
+
+
+- Le script va ensuite générer les paquets nécessaires pour créer la copie
+
+![p1-q2](./images/script2-3.jpg)
+![p1-q2](./images/script2-4.jpg)
 
 ### 3. SSID flood attack
 
 Développer un script en Python/Scapy capable d'inonder la salle avec des SSID dont le nom correspond à une liste contenue dans un fichier text fournit par un utilisateur. Si l'utilisateur ne possède pas une liste, il peut spécifier le nombre d'AP à générer. Dans ce cas, les SSID seront générés de manière aléatoire.
+
+Fonctionnement du script :
+
+- L'utilisateur devra fournir le nom de l'interface avec laquelle il veut exécuter l'attaque
+- Il aura ensuite le choix de fournir un fichier qui contient les SSIDs à créer ou de simplement laisser le générateur en créer (toujours 10 SSIDs).
+
+![p1-q2](./images/script3.jpg)
 
 ## Livrables
 
